@@ -1,0 +1,85 @@
+---
+title: "Untitled"
+output: html_document
+date: "2024-03-26"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+library(shiny)
+
+# Define UI
+shinyUI(fluidPage(
+  titlePanel("Your App Title"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("dataset", "Choose a dataset:", choices = c("mtcars", "iris")),
+      selectInput("xvar", "X-axis variable:", choices = ""),
+      selectInput("yvar", "Y-axis variable:", choices = "", selected = ""),
+      radioButtons("plotType", "Plot Type:", choices = c("Scatterplot" = "scatter", "Histogram" = "hist"))
+    ),
+    mainPanel(
+      plotOutput("plot")
+    )
+  )
+))
+
+```
+
+```{r}
+library(shiny)
+library(ggplot2)
+
+# Define server logic
+shinyServer(function(input, output, session) {
+
+  # Update variable choices based on dataset
+  observe({
+    varNames <- names(get(input$dataset))
+    updateSelectInput(session, "xvar", choices = varNames)
+    updateSelectInput(session, "yvar", choices = varNames)
+  })
+  
+  # Generate and render plot
+  output$plot <- renderPlot({
+    data <- get(input$dataset)
+    if (input$plotType == "scatter") {
+      ggplot(data, aes_string(x = input$xvar, y = input$yvar)) + geom_point()
+    } else {
+      ggplot(data, aes_string(x = input$xvar)) + geom_histogram()
+    }
+  })
+})
+
+```
+
+```{r}
+install.packages('rsconnect')
+```
+```{r}
+install.packages("rsconnect")
+
+```
+
+```{r}
+library(rsconnect)
+
+```
+
+```{r}
+rsconnect::setAccountInfo(name='esma', token='C919FC2518B6C60D391E3A718C867C29', secret='5fmbNNqzTrhOJyjvHTPW3da+IrPqbnUp/PZz9P9l')
+```
+
+```{r}
+rsconnect::deployApp()
+```
+```{r}
+options(rsconnect.max.bundle.size = 3500000000) # Set to a value larger than your app size, e.g., 3.5 GB
+```
+
+
